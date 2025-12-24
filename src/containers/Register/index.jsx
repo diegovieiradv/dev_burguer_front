@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { api } from "../../services/api.js";
 import { toast } from "react-toastify";
 import { Link as ReactLink } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import{ Container } from "./styles.js";
 import Logo from "../../assets/logoDev.png";
 import { Button } from "../../components/Button/index.jsx";
@@ -14,6 +14,7 @@ import { LeftContainer, RightContainer, Title, Form, InputContainer, Link} from 
 
 export function Register() {
 
+  const navigate = useNavigate();
   const schema = yup.object( {
     name: yup.string().required("Nome é obrigatório"),
     email: yup.string().email("Digite um email válido").required("Email é obrigatório"),
@@ -38,6 +39,9 @@ export function Register() {
     }
   );
 if (status === 201 || status === 200) {
+  setTimeout(() => {
+    navigate("/login"); 
+  }, 2000);
     toast.success("Conta criada com sucesso!");
 } else if (status === 409) {
     toast.error("Email já cadastrado. Tente outro.");

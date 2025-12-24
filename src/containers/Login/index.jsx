@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 
+
 import{ Container } from "./styles.js";
 import Logo from "../../assets/logoDev.png";
 import { Button } from "../../components/Button/index.jsx";
@@ -14,6 +15,7 @@ import { LeftContainer, RightContainer, Title, Form, InputContainer, Link} from 
 
 export function Login() {
 
+const navigate = useNavigate();
   const schema = yup.object( {
   email: yup.string().email("Digite um email válido").required("Email é obrigatório"),
   password: yup.string().min(6, "A senha deve ter pelo menos 6 cacacteres").required("Senha é obrigatória"),
@@ -24,27 +26,27 @@ export function Login() {
     resolver: yupResolver( schema ),
   } );
 
-  const onSubmit = async( data ) => {
-    const response = await toast.promise(  api.post( "/sessions", {
+  const onSubmit = async (data) => {
+   const { data: { token } } = await toast.promise(
+    api.post("/sessions", {
       email: data.email,
       password: data.password,
     }),
-    { pending: "Verificando credenciais...",
-      success: "Login realizado com sucesso!",
+    {
+      pending: "Verificando credenciais...",
+      success: {
+        render() {
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+          return "Login realizado com sucesso!";
+        },
+      },
       error: "Erro ao fazer login, verifique suas credenciais.",
     }
-  )
-    
-    console.log( response )
-
-      .then( ( response ) => {
-        console.log( response.data );
-      } )
-      .catch( ( error ) => {
-        console.error( "Erro ao fazer login:", error );
-      } );
-  }
-
+  );
+  localStorage.setItem("token", token);
+};
 
   return (
     <Container>
@@ -76,4 +78,5 @@ export function Login() {
     </Container>
   );
 }
+
 
